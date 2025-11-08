@@ -1,4 +1,5 @@
-FROM 763104351884.dkr.ecr.ap-southeast-3.amazonaws.com/pytorch-training:2.8.0-gpu-py312-cu129-ubuntu22.04-ec2
+# FROM 763104351884.dkr.ecr.us-west-2.amazonaws.com/pytorch-training:2.8.0-gpu-py312-cu129-ubuntu22.04-ec2
+FROM 907027046896.dkr.ecr.ap-southeast-3.amazonaws.com/pytorch-training:2.8.0-gpu-py312-cu129-ubuntu22.04-ec2
 
 WORKDIR /tmp1
 
