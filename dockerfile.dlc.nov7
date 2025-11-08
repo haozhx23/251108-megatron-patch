@@ -1,0 +1,15 @@
+FROM 763104351884.dkr.ecr.ap-southeast-3.amazonaws.com/pytorch-training:2.8.0-gpu-py312-cu129-ubuntu22.04-ec2
+
+WORKDIR /tmp1
+
+# RUN pip install transformers datasets
+RUN pip install -U pip
+RUN apt-get remove -y python3.10-dev libpython3.10-dev || true
+RUN pip install transformers==4.57.1 nltk sentencepiece python-etcd setuptools
+RUN pip install --no-build-isolation --config-settings="--build-option=--cpp_ext" --config-settings="--build-option=--cuda_ext" git+https://github.com/NVIDIA/apex.git
+RUN pip install hyperpod-elastic-agent
+
+# RUN git clone --depth 1 --branch core_v0.14.0 https://github.com/NVIDIA/Megatron-LM.git \
+#     && cd Megatron-LM \
+#     && pip install --no-build-isolation . \
+#     && cd .. && rm -rf Megatron-LM

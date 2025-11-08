@@ -1,0 +1,77 @@
+apiVersion: sagemaker.amazonaws.com/v1
+kind: HyperPodPyTorchJob
+metadata:
+  labels:
+    app.kubernetes.io/name: HyperPod
+    app.kubernetes.io/managed-by: kustomize
+    app: torchrecipe-2
+  name: torchrecipe-2
+spec:
+  nprocPerNode: "4"
+  replicaSpecs:
+    - name: pods
+      replicas: 2
+      template:
+        spec:
+          nodeSelector:
+            beta.kubernetes.io/instance-type: ml.g6.12xlarge
+          containers:
+            - name: pytorch
+              image: 633205212955.dkr.ecr.us-west-2.amazonaws.com/dlc-nov07-meg2:latest
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 8080 # HyperPodElasticAgent port
+              resources:
+                requests:
+                  nvidia.com/gpu: 4
+                  vpc.amazonaws.com/efa: 1
+                limits:
+                  nvidia.com/gpu: 4
+                  vpc.amazonaws.com/efa: 1
+              env:
+              - name: LOGLEVEL
+                value: "INFO"
+              - name: FI_PROVIDER
+                value: "efa"
+              - name: FI_PROVIDER
+                value: "efa"
+              - name: FI_EFA_USE_DEVICE_RDMA
+                value: "1"
+              - name: NCCL_DEBUG
+                value: "DEBUG"
+              command: ["bash", "/workspace/Megatron-LM/train-hypd-op.sh"]
+              volumeMounts:
+                - name: shmem
+                  mountPath: /dev/shm
+                - name: local
+                  mountPath: /local
+                - name: inst-nvme
+                  mountPath: /ckpt-path
+                - name: local-cache
+                  mountPath: /root/.cache
+                - name: persistent-storage
+                  mountPath: /workspace
+                  subPath: mgtlm_workspace
+          volumes:
+            - name: shmem
+              hostPath: 
+                path: /dev/shm
+            - name: local
+              hostPath:
+                path: /mnt/k8s-disks/0
+            - name: local-cache
+              hostPath:
+                path: /opt/dlami/nvme/.cache
+            - name: inst-nvme
+              hostPath:
+                path: /opt/dlami/nvme/checkpoints/
+            - name: persistent-storage
+              persistentVolumeClaim:
+                claimName: fsx-claim
+  runPolicy:
+    jobMaxRetryCount: 1
+    restartPolicy:
+      numRestartBeforeFullJobRestart: 1
+      evalPeriodSeconds: 21600
+      maxFullJobRestarts: 1
+    cleanPodPolicy: "All"
