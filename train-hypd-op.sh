@@ -3,6 +3,8 @@
 cd /workspace/Megatron-LM/
 python3 setup.py build_ext --inplace
 pip install --no-build-isolation .
+pip install --force-reinstall numpy==1.26.4
+# sleep 1000
 
 export CUDA_DEVICE_MAX_CONNECTIONS=${CUDA_DEVICE_MAX_CONNECTIONS:-1}
 CHECKPOINT_PATH=${1:-"/workspace/checkpoints/llama3_fp8"}
@@ -134,8 +136,8 @@ fi
 EVAL_AND_LOGGING_ARGS=(
     --log-interval 1
     --eval-iters 32
-    --eval-interval 100
-    --save-interval 1000
+    --eval-interval 50
+    --save-interval 50
     --log-throughput
     --profile
     --profile-step-start 4
