@@ -33,8 +33,6 @@ spec:
                 value: "INFO"
               - name: FI_PROVIDER
                 value: "efa"
-              - name: FI_PROVIDER
-                value: "efa"
               - name: FI_EFA_USE_DEVICE_RDMA
                 value: "1"
               - name: NCCL_DEBUG
